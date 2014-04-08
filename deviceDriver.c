@@ -9,6 +9,21 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Device Driver with Time");
 MODULE_AUTHOR("Vitali Ponteley");
 
+static int waitTime = 0;
+
+static int dev_open(struct inode *, struct file *);
+static int dev_rls(struct inode *, struct file *);
+static ssize_t dev_read(struct file *, char *, size_t, loff_t *);
+static ssize_t dev_write(struct file *, const char *, size_t, loff_t *);
+
+static struct file_operations fops =
+{
+    .read = dev_read,
+    .open = dev_open,
+    .write = dev_write,
+    .release = dev_rls,
+};
+
 int init_module(void)
 {
     int t = register_chrdev(89, "myDev", &fops);
@@ -21,7 +36,6 @@ void cleanup_module(void)
 {
     unregister_chrdev(89, "myDev");
 }
-
 
 static int dev_open(struct inode *inod, struct file *fil)
 {
