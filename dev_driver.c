@@ -63,3 +63,29 @@ static void timer_cleanup (void)
     // hrtimer_cancel — cancel a timer and wait for the handler to finish
     hrtimer_cancel(&htimer);
 }
+
+static int __init test_init (void)
+{
+    printk(KERN_ALERT "TEST driver loaded!\n");
+    timer_init();
+    //register_chrdev — Register a major number for character devices.
+    major_number = register_chrdev(0, DEVICE_NAME, &fops);
+
+    if (major_number < 0) {
+        printk("Registering the character device failed with %d\n", major_number);
+        return major_number;
+    }
+    printk("Please, create a dev file with 'mknod /dev/test c %d 0'.\n", major_number);
+    return SUCCESS;
+}
+
+static void __exit test_exit (void)
+{
+    //unregister_chrdev — Unregister a major number for character device.
+    unregister_chrdev(major_number, DEVICE_NAME);
+    timer_cleanup();
+}
+
+// define initialization and exit module functions
+module_init(test_init);
+module_exit(test_exit);
