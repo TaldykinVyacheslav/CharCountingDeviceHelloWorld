@@ -119,6 +119,17 @@ static int device_release (struct inode *inode, struct file *file)
     return SUCCESS;
 }
 
+/*  Called when a process writes to dev file: echo "hello" > /dev/test */
+static ssize_t device_write (struct file *filp,
+	 char *buffer,    /* The buffer to fill with data */
+	 size_t length,   /* The length of the buffer     */
+	 loff_t *offset)  /* Our offset in the file       */
+{
+    sscanf(buffer, "%d", &tick);
+    printk("wrote: %d\n", tick);
+    return sizeof(tick);
+}
+
 // define initialization and exit module functions
 module_init(test_init);
 module_exit(test_exit);
