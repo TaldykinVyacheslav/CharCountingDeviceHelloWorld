@@ -130,6 +130,14 @@ static ssize_t device_write (struct file *filp,
     return sizeof(tick);
 }
 
+static ssize_t device_read(struct file *filp,
+	   char *buffer,    /* The buffer to fill with data */
+	   size_t length,   /* The length of the buffer     */
+	   loff_t *offset)  /* Our offset in the file       */
+{
+    return 1;
+}
+
 // define initialization and exit module functions
 module_init(test_init);
 module_exit(test_exit);
