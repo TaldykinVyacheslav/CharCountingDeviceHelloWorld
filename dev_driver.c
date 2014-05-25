@@ -64,6 +64,14 @@ static void timer_cleanup (void)
     hrtimer_cancel(&htimer);
 }
 
+static struct file_operations fops =
+{
+    .read = device_read,
+    .write = device_write,
+    .open = device_open,
+    .release = device_release
+};
+
 static int __init test_init (void)
 {
     printk(KERN_ALERT "TEST driver loaded!\n");
