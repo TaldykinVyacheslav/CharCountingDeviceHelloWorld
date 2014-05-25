@@ -94,6 +94,31 @@ static void __exit test_exit (void)
     timer_cleanup();
 }
 
+/*
+ inode in Linux is
+ Data structures that contain information about files in Unix file systems 
+ that are created when a file system is created. 
+ Each file has an inode and is identified by an inode number (i-number) in the file system  where it resides. 
+ inodes provide important information on files such as user and group ownership, access mode (read, write, execute permissions) and type.
+*/
+static int device_open (struct inode *inode, struct file *file)
+{
+    text_ptr = text;
+
+    if (is_device_open) {
+        return -EBUSY;
+    }
+
+    is_device_open++;
+    return SUCCESS;
+}
+
+static int device_release (struct inode *inode, struct file *file)
+{
+    is_device_open--;
+    return SUCCESS;
+}
+
 // define initialization and exit module functions
 module_init(test_init);
 module_exit(test_exit);
