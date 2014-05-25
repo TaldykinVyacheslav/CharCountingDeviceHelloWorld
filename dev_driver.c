@@ -26,3 +26,40 @@ static int device_release(struct inode *, struct file*);
 static ssize_t device_read(struct file *, char *, size_t, loff_t*);
 static ssize_t device_write(struct file *filp, char *buf,
                       size_t count, loff_t *f_pos);
+// global variables
+static int major_number;
+static int is_device_open = 0;
+static char text[5] = "Hello\n"; /* text sent to the device */
+static char* text_ptr = text; /* current text position pointer */
+static int tick = 0;
+static bool running = false;
+static struct hrtimer htimer;
+static ktime_t kt_periode;
+
+static enum hrtimer_restart timer_function (struct hrtimer * unused)
+{
+
+    if (tick != 0) {
+        printk("%s\n", text);
+        kt_periode = ktime_set(tick, 0);  //Set a ktime_t variable from a seconds/nanoseconds value
+    }
+    // Forward a hrtimer so it expires after the hrtimer's current now 
+    hrtimer_forward_now(&htimer, kt_periode);
+    return HRTIMER_RESTART;
+}
+
+static void timer_init (void)
+{
+    kt_periode = ktime_set(0, 0);
+    // hrtimer_init — initialize a timer to the given clock  
+    // 
+    hrtimer_init (&htimer, CLOCK_REALTIME, HRTIMER_MODE_REL);
+    htimer.function = timer_function;
+    hrtimer_start(&htimer, kt_periode, HRTIMER_MODE_REL);
+}
+
+static void timer_cleanup (void)
+{
+    // hrtimer_cancel — cancel a timer and wait for the handler to finish
+    hrtimer_cancel(&htimer);
+}
