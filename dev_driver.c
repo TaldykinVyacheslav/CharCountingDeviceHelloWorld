@@ -19,3 +19,10 @@ MODULE_LICENSE(LICENSE);
 MODULE_AUTHOR(AUTHOR);
 MODULE_DESCRIPTION("Test module");
 MODULE_SUPPORTED_DEVICE(DEVICE_NAME); 
+
+// device operations
+static int device_open(struct inode *, struct file*);
+static int device_release(struct inode *, struct file*);
+static ssize_t device_read(struct file *, char *, size_t, loff_t*);
+static ssize_t device_write(struct file *filp, char *buf,
+                      size_t count, loff_t *f_pos);
