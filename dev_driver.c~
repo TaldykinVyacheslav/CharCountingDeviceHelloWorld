@@ -36,29 +36,29 @@ static bool running = false;
 static struct hrtimer htimer;
 static ktime_t kt_periode;
 
-static enum hrtimer_restart timer_function(struct hrtimer * unused)
+static enum hrtimer_restart timer_function (struct hrtimer * unused)
 {
 
     if (tick != 0) {
         printk("%s\n", text);
         kt_periode = ktime_set(tick, 0);  //Set a ktime_t variable from a seconds/nanoseconds value
     }
-    //Forward a hrtimer so it expires after the hrtimer's current now 
+    // Forward a hrtimer so it expires after the hrtimer's current now 
     hrtimer_forward_now(&htimer, kt_periode);
     return HRTIMER_RESTART;
 }
 
-static void timer_init(void)
+static void timer_init (void)
 {
     kt_periode = ktime_set(0, 0);
-    //hrtimer_init — initialize a timer to the given clock  
+    // hrtimer_init — initialize a timer to the given clock  
     // 
-    hrtimer_init(&htimer, CLOCK_REALTIME, HRTIMER_MODE_REL);
+    hrtimer_init (&htimer, CLOCK_REALTIME, HRTIMER_MODE_REL);
     htimer.function = timer_function;
     hrtimer_start(&htimer, kt_periode, HRTIMER_MODE_REL);
 }
 
-static void timer_cleanup(void)
+static void timer_cleanup (void)
 {
     // hrtimer_cancel — cancel a timer and wait for the handler to finish
     hrtimer_cancel(&htimer);
@@ -72,7 +72,7 @@ static struct file_operations fops =
     .release = device_release
 };
 
-static int __init test_init(void)
+static int __init test_init (void)
 {
     printk(KERN_ALERT "TEST driver loaded!\n");
     timer_init();
@@ -87,7 +87,7 @@ static int __init test_init(void)
     return SUCCESS;
 }
 
-static void __exit test_exit(void)
+static void __exit test_exit (void)
 {
     //unregister_chrdev — Unregister a major number for character device.
     unregister_chrdev(major_number, DEVICE_NAME);
@@ -101,7 +101,7 @@ static void __exit test_exit(void)
  Each file has an inode and is identified by an inode number (i-number) in the file system  where it resides. 
  inodes provide important information on files such as user and group ownership, access mode (read, write, execute permissions) and type.
 */
-static int device_open(struct inode *inode, struct file *file)
+static int device_open (struct inode *inode, struct file *file)
 {
     text_ptr = text;
 
@@ -113,17 +113,17 @@ static int device_open(struct inode *inode, struct file *file)
     return SUCCESS;
 }
 
-static int device_release(struct inode *inode, struct file *file)
+static int device_release (struct inode *inode, struct file *file)
 {
     is_device_open--;
     return SUCCESS;
 }
 
-/*Called when a process writes to dev file: echo "hello" > /dev/test*/
-static ssize_t device_write(struct file *filp,
-	 char *buffer,    /*The buffer to fill with data*/
-	 size_t length,   /*The length of the buffer*/
-	 loff_t *offset)  /*Our offset in the file*/
+/*  Called when a process writes to dev file: echo "hello" > /dev/test */
+static ssize_t device_write (struct file *filp,
+	 char *buffer,    /* The buffer to fill with data */
+	 size_t length,   /* The length of the buffer     */
+	 loff_t *offset)  /* Our offset in the file       */
 {
     sscanf(buffer, "%d", &tick);
     printk("wrote: %d\n", tick);
@@ -131,13 +131,13 @@ static ssize_t device_write(struct file *filp,
 }
 
 static ssize_t device_read(struct file *filp,
-	   char *buffer,    /*The buffer to fill with data*/
-	   size_t length,   /*The length of the buffer*/
-	   loff_t *offset)  /*Our offset in the file*/
+	   char *buffer,    /* The buffer to fill with data */
+	   size_t length,   /* The length of the buffer     */
+	   loff_t *offset)  /* Our offset in the file       */
 {
     return 1;
 }
 
-//define initialization and exit module functions
+// define initialization and exit module functions
 module_init(test_init);
 module_exit(test_exit);
